@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chatbot Prototype</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg,white,white);
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            background-color: #070016;
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+          
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+        }
+
+        .urgent-help,
+        .settings-button,
+        .register-button,
+        .login-button {
+            background-color: white;
+            color: rgb(7, 0, 0);
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+            margin: 0 10px;
+        }
+
+        .urgent-help:hover,
+        .settings-button:hover,
+        .register-button:hover,
+        .login-button:hover {
+            background-color: rgb(43, 125, 153);
+        }
+
+        .settings-button {
+            background-color: white;
+        }
+
+        .settings-button:hover {
+            background-color:rgb(43, 125, 153);
+        }
+
+        .container {
+            max-width: 1000px; /* Increased width */
+            margin: 50px auto;
+            background: rgb(52, 193, 214);
+            padding: 50px; /* Increased padding */
+            border-radius: 15px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.5s ease-in-out;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .button {
+            background-color: rgb(5, 6, 39);
+            color: rgb(248, 246, 246);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #357ab8;
+            transform: scale(1.05);
+        }
+
+        .chat-window {
+            border: 1px solid #ccc;
+            border-radius: 12px;
+            padding: 15px;
+            height: 350px;
+            overflow-y: auto;
+            background: #fafafa;
+            margin-bottom: 15px;
+            transition: background-color 0.5s ease;
+        }
+
+        .chat-window:hover {
+            background: #e6f7ff;
+        }
+
+        .message {
+            display: flex;
+            align-items: center;
+            margin: 12px 0;
+            opacity: 0;
+            animation: fadeIn 0.5s forwards;
+        }
+
+        .message img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .message.bot {
+            color: #4a90e2;
+        }
+
+        .message.bot img {
+            margin-right: 10px;
+        }
+
+        .message.user {
+            color: #333;
+            justify-content: flex-end;
+            text-align: right;
+        }
+
+        .message.user img {
+            order: 2;
+            margin-left: 12px;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .navigation-buttons .button {
+            font-size: 16px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .navigation-buttons .button:hover {
+            background-color: rgb(11, 5, 44);
+        }
+
+        .welcome-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>AI Chatbot</h1>
+        <div>
+            <button class="urgent-help" onclick="sendUrgentHelp()">Urgent Help</button>
+            <!-- Only show the Register and Login buttons on the Welcome Page -->
+            <button class="register-button" onclick="goToPage('registerPage')" id="registerBtn">Register</button>
+            <button class="login-button" onclick="goToPage('loginPage')" id="loginBtn">Login</button>
+        </div>
+        <button class="settings-button" onclick="goToPage('settingsPage')">Settings</button>
+    </div>
+
+    <div class="container">
+        <!-- Welcome Page -->
+        <div id="welcomePage" class="page active">
+            <h2>Welcome to AI Chatbot</h2>
+            <p>Please click below to continue.</p>
+            <div class="navigation-buttons">
+                <button class="button" onclick="goToPage('languagePage')">Next</button>
+            </div>
+        </div>
+
+        <!-- Register Page -->
+        <div id="registerPage" class="page">
+            <h2>Register</h2>
+            <form>
+                <input type="text" placeholder="Username" required><br><br>
+                <input type="password" placeholder="Password" required><br><br>
+                <button class="button" type="submit">Register</button>
+            </form>
+            <div class="navigation-buttons">
+                <button class="button" onclick="goToPage('welcomePage')">Back</button>
+                <button class="button" onclick="goToPage('loginPage')">Next</button>
+            </div>
+        </div>
+
+        <!-- Login Page -->
+        <div id="loginPage" class="page">
+            <h2>Login</h2>
+            <form>
+                <input type="text" placeholder="Username" required><br><br>
+                <input type="password" placeholder="Password" required><br><br>
+                <button class="button" type="submit">Login</button>
+            </form>
+            <div class="navigation-buttons">
+                <button class="button" onclick="goToPage('welcomePage')">Back</button>
+                <button class="button" onclick="goToPage('settingsPage')">Next</button>
+            </div>
+        </div>
+
+        <!-- Settings Page -->
+        <div id="settingsPage" class="page">
+            <h2>Settings</h2>
+            <p>Customize your preferences here.</p>
+            <div class="navigation-buttons">
+                <button class="button" onclick="goToPage('loginPage')">Back</button>
+                <button class="button" onclick="goToPage('languagePage')">Next</button>
+            </div>
+        </div>
+
+        <!-- Language and Topics Pages (kept as is) -->
+        <div id="languagePage" class="page">
+            <h2>Select Your Language</h2>
+            <button class="button" onclick="goToPage('topicsInterfacePage')">English</button>
+            <button class="button" onclick="goToPage('topicsInterfacePage')">Spanish</button>
+            <button class="button" onclick="goToPage('topicsInterfacePage')">French</button>
+            <div class="navigation-buttons">
+                <button class="button" onclick="goToPage('welcomePage')">Back</button>
+                <button class="button" onclick="goToPage('topicsInterfacePage')">Next</button>
+            </div>
+        </div>
+
+        <div id="topicsInterfacePage" class="page">
+            <h2>We can support you in..</h2>
+            <button class="button">Legal Advice</button>
+            <button class="button">Emotional Support</button>
+            <button class="button">Report an Incident</button>
+            <div class="navigation-buttons">
+                <button class="button" onclick="goToPage('languagePage')">Back</button>
+                <button class="button" onclick="goToPage('chatBotPage')">Next</button>
+            </div>
+        </div>
+
+        <!-- Chat Bot Page (kept as is) -->
+        <div id="chatBotPage" class="page">
+            <h2>Chat Bot</h2>
+            <div id="chatWindow" class="chat-window">
+                <div class="message bot">
+                    <img src="https://static.vecteezy.com/system/resources/previews/027/827/075/original/chatbot-icon-or-virtual-assistant-icon-design-with-bubble-speech-and-headset-vector.jpg" alt="Bot Avatar">
+                    <span>Welcome! How can I assist you today?</span>
+                </div>
+            </div>
+            <div class="input-section" style="display: flex;">
+                <input id="userInput" type="text" style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px 0 0 5px; font-size: 16px;" placeholder="Type your message here...">
+                <button onclick="processInput()" style="padding: 10px; background-color: #4a90e2; color: white; border: none; border-radius: 0 5px 5px 0; cursor: pointer;">Send</button>
+            </div>
+            <div class="navigation-buttons">
+                <button class="button" onclick="goToPage('topicsInterfacePage')">Back</button>
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function goToPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+
+            // Hide Register and Login buttons after the Welcome Page
+            if (pageId !== 'welcomePage') {
+                document.getElementById('registerBtn').style.display = 'none';
+                document.getElementById('loginBtn').style.display = 'none';
+            } else {
+                document.getElementById('registerBtn').style.display = 'inline-block';
+                document.getElementById('loginBtn').style.display = 'inline-block';
+            }
+        }
+
+        function sendUrgentHelp() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    const { latitude, longitude } = position.coords;
+                    alert(`Urgent help requested! Location: Latitude ${latitude}, Longitude ${longitude}`);
+                }, () => {
+                    alert('Unable to access your location. Please enable location services.');
+                });
+            } else {
+                alert('Geolocation is not supported by your browser.');
+            }
+        }
+
+        function processInput() {
+            const userInput = document.getElementById('userInput').value;
+            const chatWindow = document.getElementById('chatWindow');
+
+            if (userInput.trim() === '') {
+                return;
+            }
+
+            // Add user message to chat window
+            const userMessage = document.createElement('div');
+            userMessage.className = 'message user';
+            userMessage.innerHTML = `<span>${userInput}</span><img src="https://static.vecteezy.com/system/resources/previews/002/318/271/original/user-profile-icon-free-vector.jpg">`;
+            chatWindow.appendChild(userMessage);
+
+            // Scroll chat window to the bottom
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+
+            // Generate bot response with a typing animation
+            const botResponse = document.createElement('div');
+            botResponse.className = 'message bot';
+            botResponse.innerHTML = `<img src="https://static.vecteezy.com/system/resources/previews/027/827/075/original/chatbot-icon-or-virtual-assistant-icon-design-with-bubble-speech-and-headset-vector.jpg" alt="Bot Avatar"><span>...</span>`;
+
+            chatWindow.appendChild(botResponse);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+
+            // Simulate typing delay for the bot response
+            setTimeout(() => {
+                if (userInput.toLowerCase().includes('legal')) {
+                    botResponse.querySelector('span').textContent = 'It seems you need legal advice. Please provide more details.';
+                } else if (userInput.toLowerCase().includes('emotional')) {
+                    botResponse.querySelector('span').textContent = 'I am here to support you. How are you feeling today?';
+                } else if (userInput.toLowerCase().includes('incident')) {
+                    botResponse.querySelector('span').textContent = 'Could you describe the incident you want to report?';
+                } else if(userInput.toLowerCase().includes('how are you')) {
+                    botResponse.querySelector('span').textContent = 'Great. Thanks for asking. What about you!';
+                }else if(userInput.toLowerCase().includes('hi')) {
+                    botResponse.querySelector('span').textContent = 'Hey! How is it going. ';
+                }
+                 else if(userInput.toLowerCase().includes('hello')) {
+                    botResponse.querySelector('span').textContent = 'Hey! How is it going. ';
+                }
+                
+
+                else  {
+                    botResponse.querySelector('span').textContent = 'I am here to help. Could you please clarify your request?';
+                }
+
+                
+
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            }, 1500);
+
+            // Clear input field
+            document.getElementById('userInput').value = '';
+        }
+    </script>
+</body>
+</html>
